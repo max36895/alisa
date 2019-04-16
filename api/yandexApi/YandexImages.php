@@ -70,7 +70,7 @@ class YandexImages extends YandexService
      * Проверить занятое место
      *
      * Вернет массив
-     * - total - Количество доступного места
+     * - total - Все доступное место
      * - used - Занятое место
      *
      * @return mixed
