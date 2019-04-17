@@ -13,6 +13,7 @@ require_once __DIR__ . '/../api/Alisa.php';
 
 /**
  * Class Command
+ * @property string $origText - Оригинальный текст пользователя
  * @property bool $isLink
  * @property AlisaImageCard $image
  * @property string $userId = null

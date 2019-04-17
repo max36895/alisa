@@ -229,13 +229,22 @@ class AlisaImageCard
             $tmp = [];
             foreach ($this->imagesList as $image) {
                 $this->imgDir = $image['image_dir'];
-                $res = $this->getImageId($host);
-                if ($res['status']) {
+                if ($this->imgDir != '' || $this->imgDir != null) {
+                    $res = $this->getImageId($host);
+                    if ($res['status']) {
+                        if ($index >= self::MAX_IMAGE_FOR_GALLERY) {
+                            break;
+                        }
+                        unset($image['image_dir']);
+                        $image['image_id'] = $res['img_id'];
+                        $tmp[] = $image;
+                        $index++;
+                    }
+                } else {
                     if ($index >= self::MAX_IMAGE_FOR_GALLERY) {
                         break;
                     }
                     unset($image['image_dir']);
-                    $image['image_id'] = $res['img_id'];
                     $tmp[] = $image;
                     $index++;
                 }
@@ -347,7 +356,7 @@ class AlisaImageCard
         }
         $data = [
             'image_dir' => $imgDir,
-            'title' => $title,
+            'title' => $this->resize($title, 60),
             'description' => $this->resize($description, 250),
             'button' => $this->getButton($button, false)
         ];

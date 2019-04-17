@@ -180,8 +180,8 @@ class YandexBot extends BotSite
             throw new \Exception('YandexBot::initParam(): Не корректный output файл!');
         }
 
-        $this->output['request']['command'] = trim(str_replace('  ', ' ', mb_strtolower($this->output['request']['command'] ?? '')));
-        $this->commandText = $this->output['request']['command'];
+        $this->output['request']['command'] = trim(str_replace('  ', ' ', $this->output['request']['command'] ?? ''));
+        $this->commandText = mb_strtolower($this->output['request']['command']);
         $this->commandTextFull = mb_strtolower($this->output['request']['original_utterance'] ?? '');
 
         $this->messageId = $this->output['session']['message_id'];
@@ -212,8 +212,10 @@ class YandexBot extends BotSite
                 $this->commandTextFull = mb_strtolower($data);
             }
         }
+        $this->newCommand->origText = $this->output['request']['command'];
         if (!$this->commandText) {
             $this->commandText = $this->commandTextFull;
+            $this->newCommand->origText = $this->output['request']['original_utterance'];
         }
     }
 
