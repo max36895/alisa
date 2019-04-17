@@ -9,7 +9,7 @@ YandexBot.php   - Яндекс Алиса
 
 #Запуск
 Для запуска необходим следующий минимальный код
-```$xslt
+```php
 require_once __DIR__ . '/bot/YandexBot.php'; // Полный путь к боту
 
 $yandexBot = new YandexBot(); // создаем объект класса

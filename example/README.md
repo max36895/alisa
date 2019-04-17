@@ -4,14 +4,14 @@
 # Работа с картинками
 Работа с картинками осуществляется в классе где вы пишите логику.
 ## Карточка
-```$xslt
+```php
     $this->image->isBigImage = true; // Указываем что используем карточку
     $this->image->title = 'Title'; // Заполяем заголовок для карточки
     $this->image->description = 'Description'; // Заполяем описание для карточки
     $this->image->button = ['text' => 'button', 'url' => 'https://www.islandgift.ru', 'payload' => 'payload']; // Указываем кнопку, если необходимо. 
 ```
 ## Список с картинками
-```$xslt
+```php
    $this->image->isItemsList = true; // Указываем что использовать список
    $this->image->title = 'Title'; // Заполняем заголовок для списка
    $button = ['text' => 'button', 'url' => 'https://www.islandgift.ru', 'payload' => 'payload']; // Создаем кнопку
@@ -21,7 +21,7 @@
    $this->image->footerButton = $button; // казываем кнопку для footera
 ```
 ## Список без картинок
-```$xslt
+```php
    $this->image->isItemsList = true; // Указываем что использовать список
    $this->image->title = 'Title'; // Заполняем заголовок для списка
    $button = ['text' => 'button', 'url' => 'https://www.islandgift.ru', 'payload' => 'payload']; // Создаем кнопку
@@ -35,7 +35,7 @@
 # Работа со звуками
 Работа со звуками осуществляется дополнение функции getSound
 А именно в параметр $customParams передается массив вида:
-```$xslt
+```php
     [
         ['key' => '#$win$#', 'sounds' => ['<speaker audio=\"alice-sounds-game-win-1.opus\">', '<speaker audio=\"alice-sounds-game-win-2.opus\">', '<speaker audio=\"alice-sounds-game-win-3.opus\">',]],
     ]
@@ -45,7 +45,7 @@
 
 #Работа с nlu
 Для работы с nlu предусмотрена переменная:
-```$xslt
+```php
 $this->nlu
 ```
 Это экземпляр класса api/AlisaNlu.php.
