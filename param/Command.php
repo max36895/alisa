@@ -1,10 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 24.10.2018
- * Time: 9:42
- * Update: 11.12.2018
+ * User: MaxM18
  */
 
 namespace alisa\param;
@@ -50,11 +46,23 @@ abstract class Command extends Alisa
         $this->payload = null;
     }
 
+    /**
+     * Установить токен для картинки
+     *
+     * @param $token
+     */
     public final function setImageToken($token)
     {
         $this->image->setImageToken($token);
     }
 
+    /**
+     * Получить рандомное значение из массива
+     *
+     * @param $text
+     *
+     * @return string
+     */
     public final function getRandText($text)
     {
         if (is_array($text)) {
@@ -67,6 +75,7 @@ abstract class Command extends Alisa
      * Получение последней команды пользователя
      *
      * @param null $buttons
+     *
      * @return bool
      */
     protected function prevCommand($buttons = null): bool
@@ -99,8 +108,9 @@ abstract class Command extends Alisa
      * В некоторых навыках необходим
      *
      * @param $text
-     * @param $type
+     * @param $type - Функция вызывается 2 раза в начале, и в самом конце, если не удалось найти команду, которая обработает запрос пользователя. В последнем вызове равен end
      * @param $fullText
+     *
      * @return null|array
      */
     public function undefinedText($text, $type = 'text', $fullText = '')
@@ -134,6 +144,7 @@ abstract class Command extends Alisa
      * @param $text - выводимый текст
      * @param $button - текст на кнопке
      * @param $link - ссылка на сайт
+     *
      * @return array
      */
     public function getUpdateLink($key, $text, $button, $link): array
@@ -143,13 +154,20 @@ abstract class Command extends Alisa
 
     /**
      * Получает url сайта
-     * Актуально для загрузки картинок
+     * Актуально для загрузки картинок.
+     * Данный метод желательно переинициализировать по необходимости.
+     *
+     * Например вы загружаете картинки с ресурса https://example.com, тогда вы просто напросто возвращаете = https://example.com/
+     * И отправлять картинки в виде:
+     * $this->image->imgDir = 'img.png';
+     * Вместо:
+     * $this->image->imgDir = 'https://example.com/img.png';
      *
      * @return string
      */
     public function getHost(): string
     {
-        return 'https://www.islandgift.ru/';
+        return '';
     }
 
     /**
@@ -159,6 +177,7 @@ abstract class Command extends Alisa
      * 3 - Ссылка на ресурс или сайт
      *
      * @param $index
+     *
      * @return array
      */
     public abstract function commands($index);

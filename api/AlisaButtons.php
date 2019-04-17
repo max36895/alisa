@@ -1,19 +1,16 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 06.03.2019
- * Time: 11:58
+ * User: MaxM18
  */
 
 namespace alisa\api;
 
 /**
  * Class AlisaButtons
- * @property array $payload
- * @property string|array $title
- * @property string|array $url
- * @property bool $hide
+ * @property array $payload      - Произвольный json
+ * @property string|array $title - Текст для кнопки
+ * @property string|array $url   - Адресс сайта, на который необходимо перейти при клике
+ * @property bool $hide          - Отображать как кнопку(true) или ссылку(false)
  */
 class AlisaButtons
 {
@@ -35,7 +32,7 @@ class AlisaButtons
     }
 
     /**
-     *
+     * Удалить все кнопки
      */
     public function clearButtons(): void
     {
@@ -43,6 +40,8 @@ class AlisaButtons
     }
 
     /**
+     * Получить все кнопки, которые необходимо отобразить.
+     *
      * @return array|null
      */
     public function getButtons()
@@ -57,9 +56,12 @@ class AlisaButtons
     }
 
     /**
+     * Добавить кнопку в виде ссылки
+     *
      * @param $title
      * @param string $url
      * @param null $payload
+     *
      * @return array
      */
     public function getLink($title, $url = '', $payload = null): array
@@ -80,9 +82,12 @@ class AlisaButtons
     }
 
     /**
+     * Добавить кнопку в виде кнопки
+     *
      * @param $title
      * @param string $url
      * @param null $payload
+     *
      * @return array
      */
     public function getBtn($title, $url = '', $payload = null): array
@@ -109,6 +114,7 @@ class AlisaButtons
      * @param $url - адрес сайта, если есть
      * @param null $payload - произвольный json. Зачем нужен непонятно. По умолчанию равен function(){}
      * @param bool $hide - Отображать как кнопку или ссылку
+     *
      * @return null|array
      */
     public function getButtonData($title, $url, $payload = null, $hide = self::B_LINK)
@@ -139,6 +145,8 @@ class AlisaButtons
     }
 
     /**
+     * Добавить кнопку
+     *
      * @param $title
      * @param $url
      * @param null $payload

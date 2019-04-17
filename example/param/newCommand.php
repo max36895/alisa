@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 24.10.2018
- * Time: 9:52
+ * User: MaxM18
  */
 require_once __DIR__ . '/../../param/Command.php';
 
@@ -12,22 +9,34 @@ class newCommand extends \alisa\param\Command
     public $alisaCommand;
     public $userId = null;
 
+    /**
+     * Массив с вопросами
+     * @var mixed
+     */
     public $gameTexts;
 
+    /**
+     * Массив говорящий текс, если пользователь ответил правильно
+     * @var array
+     */
     public $correct = [
-        'Поздравляем! Это правильный ответ.\nИ так Следующий вопрос',
-        'Совершенно верно\nА следующий вопрос звучит так',
-        'Мы знали что вы сможете ответить правильно\nНадеюсь что на следующий вопрос вы так же ответите',
-        'Барабанная дробь. И это правильный ответ\nИ так Следующий вопрос',
-        'Не зря я в вас верю. Вы совершенно правы\nСледующий вопрос в студию',
-        'Если бы я мог, то хлопал вам стоя. Вы совершенно правы.\nИ следующий вопрос в студию',
+        '#$win$#Поздравляем! Это правильный ответ.\nИ так Следующий вопрос',
+        '#$win$#Совершенно верно\nА следующий вопрос звучит так',
+        '#$win$#Мы знали что вы сможете ответить правильно\nНадеюсь что на следующий вопрос вы так же ответите',
+        '#$win$#Барабанная дробь. И это правильный ответ\nИ так Следующий вопрос',
+        '#$win$#Не зря я в вас верю. Вы совершенно правы\nСледующий вопрос в студию',
+        '#$win$#Если бы я мог, то хлопал вам стоя. Вы совершенно правы.\nИ следующий вопрос в студию',
     ];
+    /**
+     * Массив говорящий текс, если пользователь ответил правильно
+     * @var array
+     */
     public $notCorrect = [
-        'К сожалению вы не правы\nИ так Следующий вопрос',
-        'К сожалению все иначе\nа теперь ответьте на этот вопрос',
-        'К сожалению это не так\nСледующий вопрос',
-        'Эх. К сожелению вы не правы. Может вам стоит перекусить\nПопробуйте ответить на данный вопрос',
-        'Вы не правы. Псс тёмный шоколад улучшает память, остроту внимания, скорость реакции и умение решать проблемы, за счёт увеличения притока крови к мозгу. Используйте данную информацию.\nА вот следующий вопрос.'
+        '#$fail$#К сожалению вы не правы\nИ так Следующий вопрос',
+        '#$fail$#К сожалению все иначе\nа теперь ответьте на этот вопрос',
+        '#$fail$#К сожалению это не так\nСледующий вопрос',
+        '#$fail$#Эх. К сожелению вы не правы. Может вам стоит перекусить\nПопробуйте ответить на данный вопрос',
+        '#$fail$#Вы не правы. Псс тёмный шоколад улучшает память, остроту внимания, скорость реакции и умение решать проблемы, за счёт увеличения притока крови к мозгу. Используйте данную информацию.\nА вот следующий вопрос.'
     ];
 
     /**
@@ -46,9 +55,11 @@ class newCommand extends \alisa\param\Command
      * П.с. Текст в навыке должен выглядеть примерно так:
      * text $#win#$ text
      * В данном случае воспроизведется звук победы.
+     *
      * @param $text
      * @param $isShowSound
      * @param null $customParams
+     *
      * @return string
      */
     public function getSound($text, $isShowSound, $customParams = null): string
@@ -65,10 +76,12 @@ class newCommand extends \alisa\param\Command
     /**
      * Переопределяем ответ.
      * Актуально, если вы захотите использовать какой-то персонализированный ответ
+     *
      * @param $key - Ключ команды.
      * @param $text
      * @param $button
      * @param $link
+     *
      * @return array
      */
     public function getUpdateLink($key, $text, $button, $link): array
@@ -97,11 +110,20 @@ class newCommand extends \alisa\param\Command
         $this->updateLink = true; // Указывает что некоторые обработанные ответы изменятся
     }
 
+    /**
+     * Получение предыдущей команды, актуально если вы хотите передать другие стандартные кнопки.
+     * @param null $buttons
+     * @return bool
+     */
     protected function prevCommand($buttons = null): bool
     {
         return parent::prevCommand($buttons);
     }
 
+    /**
+     * Следующий вопрос
+     * @return mixed|string
+     */
     protected function next()
     {
         if ($this->prevCommand()) {
@@ -117,6 +139,10 @@ class newCommand extends \alisa\param\Command
         return $this->info();
     }
 
+    /**
+     * Если утверждение верно
+     * @return mixed|string
+     */
     protected function isTrue()
     {
         if ($this->prevCommand()) {
@@ -131,18 +157,29 @@ class newCommand extends \alisa\param\Command
         return $this->help();
     }
 
+    /**
+     * Посмотреть инетересный факт
+     * @return mixed
+     */
     private function info()
     {
         $info = include __DIR__ . '/../../param/information.php';
-        return $info[rand(0, count($info) - 1)];
+        return $this->getRandText($info);
     }
 
+    /**
+     * Вывести помощь по игре
+     * @return string
+     */
     protected function help()
     {
-        $help = 'Цель игры заключается в ответе является ли данное утверждение правдой или нет\nЧто бы начать игру просто скажите \"Старт\".\nЕсли вы считаете что утверждение верно, то смело говорите \"Правда\"\nЕли вы считаете что утверждение ложно, то так же смело говорите \"Лож\"\nЧто бы выйти из игры просто скажите \"Стоп\"';
-        return $help;
+        return 'Цель игры заключается в ответе является ли данное утверждение правдой или нет\nЧто бы начать игру просто скажите \"Старт\".\nЕсли вы считаете что утверждение верно, то смело говорите \"Правда\"\nЕли вы считаете что утверждение ложно, то так же смело говорите \"Лож\"\nЧто бы выйти из игры просто скажите \"Стоп\"';
     }
 
+    /**
+     * Если утверждение ложное
+     * @return mixed|string
+     */
     protected function isFalse()
     {
         if ($this->prevCommand()) {
@@ -158,6 +195,10 @@ class newCommand extends \alisa\param\Command
         return $this->help();
     }
 
+    /**
+     * Начинаем игру
+     * @return mixed
+     */
     protected function game()
     {
         $welcome = [
@@ -172,6 +213,10 @@ class newCommand extends \alisa\param\Command
         return $welcome[rand(0, count($welcome) - 1)];
     }
 
+    /**
+     * пользователь устал
+     * @return mixed
+     */
     protected function wearied()
     {
         $wearieds = [
@@ -186,7 +231,9 @@ class newCommand extends \alisa\param\Command
 
     /**
      * Обработка комманд. В зависимости от $index выполяется та или иная обработка.
+     *
      * @param $index - ключ комманды, который был указан в allCommand.php
+     *
      * @return array
      */
     public function commands($index)
@@ -227,9 +274,11 @@ class newCommand extends \alisa\param\Command
 
     /**
      * Данная функция вызывается в начале, а так же вызваться в конце
+     *
      * @param $text
      * @param string $type если вызвалось в конце значение будет равно end
      * @param string $fullText
+     *
      * @return array|null|void
      */
     public function undefinedText($text, $type = 'text', $fullText = '')

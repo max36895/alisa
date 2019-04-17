@@ -1,10 +1,11 @@
 <?php
+/**
+ * User: MaxM18
+ */
 
 namespace alisa\bot;
 
-
 use standard\newCommand;
-
 
 /**
  * Class BotSite
@@ -114,7 +115,7 @@ class BotSite
      * @var array
      */
     public $help = [
-        'помощь',
+        'Помощь',
     ];
 
     protected function getHelp(): string
@@ -161,7 +162,7 @@ class BotSite
     {
         $count = count($this->thank);
         if ($count == 0) {
-            return 'И вам большое спасибо, за то что пользуетесь нашими услугами😇\nВсего вам самого доброго🍀\nС наилучшими пожеланиями Максим✌';
+            return 'И вам большое спасибо, за то что пользуетесь нашими услугами😇\nВсего вам самого доброго🍀';
         }
         return $this->thank[rand(0, $count - 1)];
     }
@@ -190,6 +191,7 @@ class BotSite
 
     /**
      * Инициализация всех команд
+     *
      * @return array
      */
     public function getDirAllCommand(): array
@@ -229,6 +231,7 @@ class BotSite
 
     /**
      * Разбирает текст пользователя и обрабатывает его
+     *
      * @return string
      */
     protected function commandKey(): string
@@ -299,7 +302,9 @@ class BotSite
 
     /**
      * Обработка команд
+     *
      * @param $key
+     *
      * @return bool
      */
     public function command($key): bool
@@ -428,6 +433,7 @@ class BotSite
 
     /**
      * Запуск Бота
+     *
      * @return string
      */
     public function start(): string

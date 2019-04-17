@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 13.02.2019
- * Time: 13:29
+ * User: MaxM18
  */
 
 namespace alisa\api;
@@ -61,8 +58,7 @@ class AlisaImageCard
 
     /**
      * Установить идентификатор навыка
-     *
-     * нужен для того чтобы можно было корректно загружать картинки
+     * Нужен для того чтобы можно было корректно загружать картинки
      *
      * @param $skillId
      */
@@ -77,15 +73,17 @@ class AlisaImageCard
      * Установить токен для картинок
      * @param string $token
      */
-    public function setImageToken($token = 'AQAAAAAPOgSRAAT7o34vRz8grkOXph2wy8YqFjc')
+    public function setImageToken($token = '<Ваш токен>')
     {
         $this->imageToken = $token;
     }
 
     /**
-     * Получить объект кнопка
+     * Получить объект для отображения кнопки
+     *
      * @param null $button
      * @param bool $isUrl
+     *
      * @return array|null
      */
     protected function getButton($button = null, $isUrl = true)
@@ -140,14 +138,17 @@ class AlisaImageCard
     /**
      * Проверяет наличие картинки в бд, и в случае отсутствия загружает её на сервер Яндекса и записывает данные в бд
      * Если не удалось загрузить картинку, тогда trigger равен false, и картинка не отобразится.
-     * возвращает массив
+     * Возвращает массив
      *
      * status - статус загрузки картинки;
      *     - true - успешно загружено;
      *     - false - не удалось загрузить;
      * img_id - Идентификатор картинки в системе яндекс
      *
-     * @param string $host
+     * @param string $host - Адресс ресурса от куда используется картинка. Актуально, если все картинки с одного ресурса.
+     * Например вы загружаете картинки с ресурса example.com, тогда вы просто напросто можете указать host = example.com/
+     * И отправлять картинки в виде img.png, вместо example.com/img.png
+     *
      * @return array['status'=>bool,'img_id'=>string]
      */
     protected function getImageId($host = 'https://www.islandgift.ru/'): array
@@ -157,29 +158,46 @@ class AlisaImageCard
         }
 
         /**
-         * todo Тут вставить свой поиск в бд
+         * todo Тут желательно вставить свой поиск в базе данных, но можно оставить и так.
          */
-        //require_once __DIR__ . '/../../../kernel/model/AlisaImage.php';
-        //$alisaImage = new \AlisaImage();
-        $trigger = true;
-        //if (!$alisaImage->initDatas($alisaImage->select('WHERE `url` = "' . $host . str_replace('../', '', $this->imgDir) . '"'))) {
-        $this->yImages->setImageToken($this->imageToken);
-        $this->yImages->skillsId = $this->skillId;
-        $image = $this->yImages->downloadImageUrl($host . str_replace('../', '', $this->imgDir));
-        if ($image) {
-            //     $alisaImage->img_id = $image['id'];
-            //     $alisaImage->url = '' . $host . str_replace('../', '', $this->imgDir);
-            //     $alisaImage->insert();
-        } else {
-            $trigger = false;
+        $imageDir = __DIR__ . '/images';
+        if (!is_dir($imageDir)) {
+            mkdir($imageDir);
         }
-        //}
-        return ['status' => $trigger, 'img_id' => ''/*$alisaImage->img_id*/];
+
+        $imageFileJson = $imageDir . '/imageData.json';
+        $imageFile = fopen($imageFileJson, 'r');
+        $alisaImages = [];
+
+        if ($imageFile) {
+            $alisaImages = json_decode(fread($imageFile, filesize($imageFileJson)), true);
+            fclose($imageFile);
+        }
+
+        $trigger = true;
+        $imgId = $host . str_replace('../', '', $this->imgDir);
+
+        if ($alisaImages[$imgId] ?? null) {
+            $this->yImages->setImageToken($this->imageToken);
+            $this->yImages->skillsId = $this->skillId;
+            $image = $this->yImages->downloadImageUrl($host . str_replace('../', '', $this->imgDir));
+            if ($image) {
+                $alisaImages[$imgId] = $image['id'];
+                $imageFile = fopen($imageFileJson, 'w');
+                fwrite($imageFile, json_encode($alisaImages, JSON_UNESCAPED_UNICODE));
+                fclose($imageFile);
+            } else {
+                $trigger = false;
+            }
+        }
+        return ['status' => $trigger, 'img_id' => $alisaImages[$imgId]];
     }
 
     /**
      * Получить контент для большой картинки
+     *
      * @param $host
+     *
      * @return array|null
      */
     public function sendBigImage($host)
@@ -198,9 +216,10 @@ class AlisaImageCard
      *
      * Изменяет переменную sendImage
      * Если переменная равно '', значит картинки подгрузить не удалось,
-     * и они отображаться не будут
+     * И список отображаться не будут
      *
      * @param $host
+     *
      * @return array|null
      */
     public function sendItemsList($host)
@@ -244,10 +263,11 @@ class AlisaImageCard
 
     /**
      * Обрезание текста до нужной длины,
-     * а так же преобразование лишних символов
+     * А так же преобразование лишних символов
      *
      * @param string $text
      * @param int $size
+     *
      * @return string
      */
     private function resize($text, $size = 950)
@@ -260,6 +280,7 @@ class AlisaImageCard
 
     /**
      * Получить данные для большой картинки
+     *
      * @return array
      */
     public function getBigImage()
@@ -269,7 +290,7 @@ class AlisaImageCard
             'type' => 'BigImage',
             "image_id" => $this->imageId,
             "title" => $this->resize($this->title, 100),
-            "description" => $this->resize($this->description, 200),
+            "description" => $this->resize($this->description, 250),
         ];
         if ($btn) {
             $data['button'] = $btn;
@@ -278,7 +299,8 @@ class AlisaImageCard
     }
 
     /**
-     * получить данные для коллекции
+     * Получить данные для коллекции
+     *
      * @return array
      */
     public function getItemList()
@@ -290,7 +312,7 @@ class AlisaImageCard
 
         $data['items'] = $this->imagesList;
         $data['footer'] = [
-            'text' => $this->footerText,
+            'text' => $this->resize($this->footerText, 60),
             'button' => $this->getButton($this->footerButton, false)
         ];
         if ($data['footer']['text']) {
@@ -305,10 +327,17 @@ class AlisaImageCard
 
     /**
      * Добавить картинку в коллекцию
-     * @param $imgDir
-     * @param $title
-     * @param $description
-     * @param $button
+     *
+     * @param string $imgDir
+     * @param string $title
+     * @param string $description
+     * @param null|string|array $button - если null, то кнопка не отображается. Если string, тогда поля text и payload, заполняются содержимым переменной.
+     * Если array то ввида:
+     * [
+     *  'text' => string
+     *  'url' => string
+     *  'payload' => string
+     * ]
      */
     public function addImages($imgDir, $title, $description, $button = null)
     {
@@ -319,7 +348,7 @@ class AlisaImageCard
         $data = [
             'image_dir' => $imgDir,
             'title' => $title,
-            'description' => $this->resize($description, 200),
+            'description' => $this->resize($description, 250),
             'button' => $this->getButton($button, false)
         ];
         if ($data['button'] == null) {
@@ -327,5 +356,4 @@ class AlisaImageCard
         }
         $this->imagesList[] = $data;
     }
-
 }

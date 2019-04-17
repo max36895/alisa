@@ -1,8 +1,6 @@
 <?php
 /**
- * User: Maximko
- * Date: 16.08.2018
- * Time: 13:54
+ * User: MaxM18
  */
 
 namespace yandex\api;
@@ -28,6 +26,7 @@ class YandexService
     /**
      * Происходит инициализация userId и токена, если они не проинициализированы
      * YandexTurboAPI constructor.
+     *
      * @param null $oauth - токен для работы
      */
     public function __construct($oauth = null)
@@ -39,14 +38,16 @@ class YandexService
 
     /**
      * Отправка запроса.
+     *
      * @param $url - На какой адресс будет выполняться запрос.
      * @param array $params (
      * 'file'=>'...', Указывать если подгружается файл (Сюда необходимо прописать пить до расположения файла на сервере)
      * 'post'=>'...', Указывать если необходимо отправить POST запрос
      * 'header'=>'...', Указать дополнительный заголовок.
      * ) - Можно не заполнять данное поле.
-     * @param $customRequest - Кастомный запрос типа PUT или любой другой.
-     * @return mixed|null
+     * @param $customRequest - Кастомный запрос типа PUT DELETE или любой другой.
+     *
+     * @return array|null
      * @throws Exception
      */
     protected function sendRequire($url, $params = [], $customRequest = null)
@@ -67,7 +68,7 @@ class YandexService
                 curl_setopt($curl, CURLOPT_POSTFIELDS, file_get_contents($params['file']));
                 curl_setopt($curl, CURLOPT_POST, 1);
             } else {
-                throw new Exception('Не удалось найти файл');
+                throw new Exception('YandexService::sendRequire() Error: Не удалось найти файл');
             }
         }
         if (isset($params['post']) && $params['post']) {
@@ -92,6 +93,7 @@ class YandexService
 
     /**
      * Отправка запроса на сервер.
+     *
      * @param $url
      * @param $param
      * @param $customRequest
@@ -109,6 +111,7 @@ class YandexService
 
     /**
      * Установить токен.
+     *
      * @param $oauth
      */
     public function setOauth($oauth)
@@ -118,6 +121,7 @@ class YandexService
 
     /**
      * Получить токен.
+     *
      * @return string
      */
     public function getOauth()
@@ -127,11 +131,12 @@ class YandexService
 
     /**
      * Логирование ошибок.
+     *
      * @param Exception $e - Исключение
      * @param bool $isError - Записывать ошибку в лог файл или нет
      * @param bool $isShow - Отобразить ошибку в консоли или нет
      */
-    public function logging(Exception $e, $isError = false, $isShow = true)
+    public function logging(Exception $e, $isError = true, $isShow = false)
     {
         $fileErrorDir = __DIR__ . '/error';
         if (!is_dir($fileErrorDir)) {
@@ -153,6 +158,7 @@ class YandexService
 
     /**
      * Добавить текст ошибки
+     *
      * @param $error
      */
     public function setError($error)
@@ -162,6 +168,7 @@ class YandexService
 
     /**
      * Получить текст ошибки
+     *
      * @return mixed
      */
     public function getError()
@@ -171,6 +178,7 @@ class YandexService
 
     /**
      * Получить текст ошибки в текстовом формате
+     *
      * @return string
      */
     public function getErrorToString()

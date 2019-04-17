@@ -1,4 +1,7 @@
 <?php
+/**
+ * Пример на основе игры правда или ложь
+ */
 require_once __DIR__ . '/../YandexBot.php';
 
 $yandexBot = new \alisa\bot\YandexBot();

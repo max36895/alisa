@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 21.01.2019
- * Time: 15:23
+ * User: MaxM18
  */
 
 namespace alisa\api;
@@ -24,6 +21,7 @@ class AlisaNlu
      * Получение данных по выбранному типу
      *
      * @param $nluType
+     *
      * @return array|null
      */
     private function getData($nluType)
@@ -43,7 +41,9 @@ class AlisaNlu
 
     /**
      * Переводит текст в нормальный вид. 1 символ с заглавной буквы.
+     *
      * @param $text
+     *
      * @return string
      */
     protected function getCapital($text): string
@@ -56,7 +56,8 @@ class AlisaNlu
      * Вернет имя
      *
      * @param $fio
-     * @return array
+     *
+     * @return array['status' => bool, 'result' => string]
      */
     public function getUserName($fio): array
     {

@@ -1,6 +1,9 @@
 <?php
-namespace alisa\bot;
+/**
+ * User: MaxM18
+ */
 
+namespace alisa\bot;
 
 ini_set('display_errors', 'off');
 header('Content-Type: application/json');
@@ -67,6 +70,7 @@ class YandexBot extends BotSite
      *
      * @param string $text
      * @param int $size
+     *
      * @return string
      */
     private function resize($text, $size = 950)
@@ -82,6 +86,7 @@ class YandexBot extends BotSite
      * Возвращается json строка.
      *
      * @param bool $endSession - открыта сессия или нет (вышел пользователь или нет)
+     *
      * @return string
      * @throws \Exception
      */
@@ -110,6 +115,7 @@ class YandexBot extends BotSite
      * и заполнение данных(кнопки, ссылки, картинки, ...)
      *
      * @param bool $endSession
+     *
      * @return array
      */
     private function getResponse($endSession): array
@@ -164,6 +170,7 @@ class YandexBot extends BotSite
      * Инициализация основных параметров.
      * текст запроса
      * сессия и тд.
+     *
      * @throws \Exception
      */
     private function initParam(): void
@@ -325,6 +332,7 @@ class YandexBot extends BotSite
      * Возвращает тело ответа.
      *
      * @param null $output
+     *
      * @return string
      * @throws \Exception
      */

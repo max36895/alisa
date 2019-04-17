@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 10.01.2019
- * Time: 9:01
+ * User: MaxM18
  */
 
 namespace alisa\api;
@@ -311,12 +308,14 @@ class AlisaSound
     const S_AUDIO_HUMAN = '#$human_all$#';
     const S_AUDIO_MUSIC = '#$music_all$#';
 
-
     /**
+     * Поиск и отображение звуков
+     *
      * @param $text
      * @param $isShowSound
      * @param $sounds
-     * @return mixed
+     *
+     * @return string
      */
     private function replaceSounds($text, $isShowSound, $sounds)
     {
@@ -348,10 +347,13 @@ class AlisaSound
     }
 
     /**
+     * Обработка кастомного массива звуков
+     *
      * @param $text
      * @param $isShowSound
      * @param null $customParams
-     * @return mixed|null
+     *
+     * @return string|null
      */
     protected function getCustomParamSound($text, $isShowSound, $customParams = null)
     {
@@ -362,9 +364,12 @@ class AlisaSound
     }
 
     /**
+     * Обработка стандартного массива звуков.
+     *
      * @param $text
      * @param $isShowSound
-     * @return mixed
+     *
+     * @return string
      */
     protected function getStandardParamSound($text, $isShowSound)
     {
@@ -372,10 +377,13 @@ class AlisaSound
     }
 
     /**
+     * Получить Массив звуков
+     *
      * @param $text
      * @param $isShowSound
      * @param null $customParams
-     * @return mixed|null
+     *
+     * @return string|null
      */
     public function getSound($text, $isShowSound, $customParams = null)
     {
@@ -394,8 +402,11 @@ class AlisaSound
     }
 
     /**
+     * Удалить из текста все наложения на голос
+     *
      * @param $text
-     * @return mixed
+     *
+     * @return string
      */
     protected function getSEffect($text)
     {

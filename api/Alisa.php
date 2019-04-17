@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 06.03.2019
- * Time: 13:37
+ * User: MaxM18
  */
 
 namespace alisa\api;
@@ -14,10 +11,16 @@ require_once __DIR__ . '/AlisaImageCard.php';
 require_once __DIR__ . '/AlisaButtons.php';
 
 /**
+ * Класс для взаимодействия в различными блокими
+ * - Картинки
+ * - nlu
+ * - Кнопки
+ * - Звуки
+ *
  * Class Alisa
- * @property AlisaNlu $nlu
- * @property AlisaImageCard $image
- * @property AlisaButtons $button
+ * @property AlisaNlu $nlu         - nlu см. Документацию; Возможности навыков -> Именованные сущности в запросах
+ * @property AlisaImageCard $image - Класс для работы с картинками, а именно отображение карточек и списков.
+ * @property AlisaButtons $button  - Класс для работы с кнопками.
  */
 class Alisa extends AlisaSound
 {
@@ -45,7 +48,8 @@ class Alisa extends AlisaSound
     /**
      * Получить массив для отображения картинки или галлереи
      *
-     * @param $host
+     * @param $host - url от куда было взято изображение.
+     *
      * @return array|null
      */
     final public function getImage($host)
@@ -69,9 +73,9 @@ class Alisa extends AlisaSound
     /**
      * Добавить кнопку в виде кнопки
      *
-     * @param $title
-     * @param null $url
-     * @param null $payload
+     * @param $title - Название кнопки
+     * @param null $url - Название кнопки
+     * @param null $payload - Произвольный json
      */
     final function addButtons($title, $url = null, $payload = null): void
     {
@@ -81,9 +85,9 @@ class Alisa extends AlisaSound
     /**
      * Добавить кнопку в виде ссылки
      *
-     * @param $title
-     * @param null $url
-     * @param null $payload
+     * @param $title - Название кнопки
+     * @param null $url - Название кнопки
+     * @param null $payload - Произвольный json
      */
     final function addLinks($title, $url = null, $payload = null): void
     {
@@ -93,10 +97,10 @@ class Alisa extends AlisaSound
     /**
      * Инициализация кнопок
      *
-     * @param $title
-     * @param null $url
-     * @param null $payload
-     * @param bool $type
+     * @param $title - Название кнопки
+     * @param null $url - Название кнопки
+     * @param null $payload - Произвольный json
+     * @param bool $type - Тип кнопки
      */
     final public function initButtons($title, $url = null, $payload = null, $type = AlisaButtons::B_BTN): void
     {
@@ -122,12 +126,20 @@ class Alisa extends AlisaSound
     }
 
     /**
-     * Обработка звуков
+     * Переопределение обработки звуков.
+     * В логике навыка, вы просто можете переинициализировать данный метод, указав свои звуки которые вам необходимы.
      *
-     * @param $text
-     * @param $isShowSound
-     * @param null $customParams
-     * @return mixed|null
+     * @param $text - Текст ответа навыка
+     * @param $isShowSound - Отображать или нет звуки
+     * @param null $customParams - Кастомные параметры звука должен быть массивом вида:
+     * [
+     *  [
+     *      'key' => string,  - Ключ, который будет вставлен в текст, и в дальнейшем заменен на звук
+     *      'sounds' => array - Массив звуков. Из них выберется рандомный.
+     *  ]
+     * ]
+     *
+     * @return string|null
      */
     public function getSound($text, $isShowSound, $customParams = null)
     {
@@ -153,6 +165,7 @@ class Alisa extends AlisaSound
 
     /**
      * Установить значение nlu
+     *
      * @param $nlu
      */
     final public function setNlu($nlu): void
@@ -162,9 +175,17 @@ class Alisa extends AlisaSound
 
     /**
      * Обработка nlu
-     * По умолчанию идет обработка имени
+     * По умолчанию идет обработка и поиск имени
+     * По необходимости можно переинициализировать.
+     *
+     * А если совсем не нужно, то просто возвращайте массив:
+     * [
+     *  'status' => false,
+     *  'result' => ''
+     * ]
      *
      * @param $nlu
+     *
      * @return array
      */
     public function nluGenerate($nlu = null): array

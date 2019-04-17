@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: max18
- * Date: 18.12.2018
- * Time: 9:30
+ * User: MaxM18
  */
 
 namespace yandex\api;
@@ -13,7 +10,7 @@ use Exception;
 require_once __DIR__ . '/YandexService.php';
 
 /**
- * Класс для работы с картинками для навыка.
+ * Класс для работы с api картинками для навыка.
  * Class YandexImages
  * @package yandex\api
  * @property string $skillId - Идентификатор вашего навыка.
@@ -28,18 +25,13 @@ class YandexImages extends YandexService
      */
     const IMAGE_TOKEN = '<Токен, который мы получили при регистрации>';
 
-    public $skillsId; // Идентификатор навыка. Можно получить в запресе на навык (поле skill_id). Или из url навыка в панели для разработчиков.
-
     /**
-     * Куда отправляем запрос.
-     * @return string
+     * Идентификатор навыка. Можно получить в запросе навыка(Блок session поле skill_id). Или из url навыка в панели для разработчиков.
+     * @var string null
      */
-    public function getUrl()
-    {
-        return 'https://dialogs.yandex.net/api/v1/';
-    }
+    public $skillsId;
 
-    public function __construct($oauth = null)
+    public final function __construct($oauth = null)
     {
         if (!$oauth) {
             $oauth = self::IMAGE_TOKEN;
@@ -49,7 +41,18 @@ class YandexImages extends YandexService
     }
 
     /**
+     * Куда отправляем запрос.
+     *
+     * @return string
+     */
+    public final function getUrl()
+    {
+        return 'https://dialogs.yandex.net/api/v1/';
+    }
+
+    /**
      * Установить токен.
+     *
      * @param $token
      */
     public function setImageToken($token)
@@ -59,6 +62,7 @@ class YandexImages extends YandexService
 
     /**
      * Получить токен.
+     *
      * @return string
      */
     public function getImageToken()
@@ -73,7 +77,7 @@ class YandexImages extends YandexService
      * - total - Все доступное место
      * - used - Занятое место
      *
-     * @return mixed
+     * @return null|array['total' => int, 'used' => int]
      */
     public function checkOutPlace()
     {
@@ -98,7 +102,8 @@ class YandexImages extends YandexService
      * - origUrl - Адрес изображения.
      *
      * @param $url - Адресс картики из интернета
-     * @return mixed|array
+     *
+     * @return null|array['id' => string, 'origUrl' => string]
      */
     public function downloadImageUrl($url)
     {
@@ -127,8 +132,9 @@ class YandexImages extends YandexService
      * - id - Идентификатор изображения
      * - origUrl - Адрес изображения.
      *
-     * @param $img - расположение картинки на сервере
-     * @return mixed|array
+     * @param $img - Расположение картинки на сервере
+     *
+     * @return null|array['id' => string, 'origUrl' => string]
      */
     public function downloadImageFile($img)
     {
@@ -153,11 +159,11 @@ class YandexImages extends YandexService
     /**
      * Просмотр всех загруженных изображений
      *
-     * Вернет массив из изображений
+     * Вернет массив из массива изображений
      * - id - Идентификатор изображения
      * - origUrl - Адрес изображения.
      *
-     * @return mixed|array
+     * @return null|array[['id' => string, 'origUrl' => string],...]
      */
     public function getLoadedImages()
     {
@@ -168,11 +174,11 @@ class YandexImages extends YandexService
                     return $query['images'];
                 } else {
                     $this->setError($query);
-                    throw new Exception('YandexImages::getImages() Error: Не удалось получить список загруженных сообщений');
+                    throw new Exception('YandexImages::getLoadedImages() Error: Не удалось получить список загруженных сообщений');
                 }
             }
             $this->setError('Не выбран навык');
-            throw new Exception('YandexImages::getImages() Error: Не выбран навык');
+            throw new Exception('YandexImages::getLoadedImages() Error: Не выбран навык');
         } catch (Exception $e) {
             $this->logging($e, true);
             return null;
@@ -181,11 +187,11 @@ class YandexImages extends YandexService
 
     /**
      * Удаление выбранной картинки
-     *
      * В случае успеха вернет 'ok'
      *
      * @param $imgId - Идентификатор картинки, которую необходимо удалить.
-     * @return mixed|null|array
+     *
+     * @return null|array
      */
     public function deleteImage($imgId)
     {
@@ -215,7 +221,7 @@ class YandexImages extends YandexService
      * - success - Количество успешно удаленных картинок
      * - fail - Количество не удаленных картинок
      *
-     * @return array
+     * @return array['success' => int, 'fail' => int]
      */
     public function deleteAllImage()
     {
@@ -230,6 +236,7 @@ class YandexImages extends YandexService
                 } else {
                     $fail++;
                 }
+                sleep(3);
             } else {
                 $fail++;
             }
