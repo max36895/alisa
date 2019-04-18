@@ -202,6 +202,7 @@ class YandexBot extends BotSite
 
         $this->getNewCommand();
         $this->newCommand->image->setSkillId($this->skillId);
+        $this->newCommand->meta = $this->meta;
         if (!$this->commandTextFull) {
             if ($this->output['request']['payload'] ?? null) {
                 $data = $this->output['request']['payload'];

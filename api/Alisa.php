@@ -18,7 +18,7 @@ require_once __DIR__ . '/AlisaButtons.php';
  * - Звуки
  *
  * Class Alisa
- * @property AlisaNlu $nlu         - nlu см. Документацию; Возможности навыков -> Именованные сущности в запросах
+ * @property AlisaNlu $nlu         - nlu см. Документацию; Возможности навыков -> Именованные сущности в запросах.
  * @property AlisaImageCard $image - Класс для работы с картинками, а именно отображение карточек и списков.
  * @property AlisaButtons $button  - Класс для работы с кнопками.
  */

@@ -16,7 +16,6 @@ class AlisaSound
     const S_EFFECT_TRAIN_ANNOUNCE = '<speaker effect="train_announce">';
     const S_EFFECT_END = '<speaker effect="-">';
 
-
     protected $standardParam = [
         [
             'key' => '#$game_win$#',

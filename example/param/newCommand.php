@@ -87,7 +87,6 @@ class newCommand extends \alisa\param\Command
     public function getUpdateLink($key, $text, $button, $link): array
     {
         switch ($key) {
-            case 'hello':
             case 'thank':
             case 'by':
             case 'name':
@@ -121,14 +120,32 @@ class newCommand extends \alisa\param\Command
     }
 
     /**
+     * Получаем пользовательскте данные.
+     * @return bool
+     */
+    public function isParams(): bool
+    {
+        if (!$this->param) {
+            if ($this->prevCommand()) {
+                $this->param['example'] = $this->param['example'] ?? '';
+            } else {
+                $this->param = [];
+                $this->param['example'] = null;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Следующий вопрос
      * @return mixed|string
      */
     protected function next()
     {
-        if ($this->prevCommand()) {
+        $this->isParams();
+        if ($this->param['example']) {
             $this->buttons = ['правда', 'ложь'];
-            $result = json_decode($this->alisaCommand->param, true);
+            $result = $this->gameTexts[$this->param['example']];
 
             if ($result[1]) {
                 return "Это правда. Давайте следующий вопрос.";
@@ -141,17 +158,19 @@ class newCommand extends \alisa\param\Command
 
     /**
      * Если утверждение верно
-     * @return mixed|string
+     *
+     * @param $res
+     * @return string
      */
-    protected function isTrue()
+    protected function isResult($res)
     {
-        if ($this->prevCommand()) {
+        $this->isParams();
+        if ($this->param['example']) {
             $this->buttons = ['правда', 'ложь'];
-            $result = json_decode($this->alisaCommand->param, true);
-            if ($result[1]) {
-                return $this->correct[rand(0, count($this->correct) - 1)];
+            if ($this->gameTexts[$this->param['example']][1] == $res) {
+                return $this->getRandText($this->correct);
             } else {
-                return $this->notCorrect[rand(0, count($this->notCorrect) - 1)];
+                return $this->getRandText($this->notCorrect);
             }
         }
         return $this->help();
@@ -174,25 +193,6 @@ class newCommand extends \alisa\param\Command
     protected function help()
     {
         return 'Цель игры заключается в ответе является ли данное утверждение правдой или нет\nЧто бы начать игру просто скажите \"Старт\".\nЕсли вы считаете что утверждение верно, то смело говорите \"Правда\"\nЕли вы считаете что утверждение ложно, то так же смело говорите \"Лож\"\nЧто бы выйти из игры просто скажите \"Стоп\"';
-    }
-
-    /**
-     * Если утверждение ложное
-     * @return mixed|string
-     */
-    protected function isFalse()
-    {
-        if ($this->prevCommand()) {
-            $this->buttons = ['правда', 'ложь'];
-            $result = json_decode($this->alisaCommand->param, true);
-
-            if ($result[1] == false) {
-                return $this->correct[rand(0, count($this->correct) - 1)];
-            } else {
-                return $this->notCorrect[rand(0, count($this->notCorrect) - 1)];
-            }
-        }
-        return $this->help();
     }
 
     /**
@@ -240,24 +240,28 @@ class newCommand extends \alisa\param\Command
     {
         switch ($index) {
             case 'true':
-                $text = $this->isTrue();
-                $this->param = $this->gameTexts[rand(0, count($this->gameTexts) - 1)];
-                $text .= '\n' . $this->param[0];
+                $this->isParams();
+                $text = $this->isResult(true);
+                $this->param['example'] = rand(0, count($this->gameTexts) - 1);
+                $text .= '\n' . $this->gameTexts[$this->param['example']][0];
                 break;
             case 'false':
-                $text = $this->isFalse();
-                $this->param = $this->gameTexts[rand(0, count($this->gameTexts) - 1)];
-                $text .= '\n' . $this->param[0];
+                $this->isParams();
+                $text = $this->isResult(false);
+                $this->param['example'] = rand(0, count($this->gameTexts) - 1);
+                $text .= '\n' . $this->gameTexts[$this->param['example']][0];
                 break;
             case 'game':
+                $this->isParams();
                 $text = $this->game();
-                $this->param = $this->gameTexts[rand(0, count($this->gameTexts) - 1)];
-                $text .= '\n' . $this->param[0];
+                $this->param['example'] = rand(0, count($this->gameTexts) - 1);
+                $text .= '\n' . $this->gameTexts[$this->param['example']][0];
                 break;
             case 'next':
+                $this->isParams();
                 $text = $this->next();
-                $this->param = $this->gameTexts[rand(0, count($this->gameTexts) - 1)];
-                $text .= '\n' . $this->param[0];
+                $this->param['example'] = rand(0, count($this->gameTexts) - 1);
+                $text .= '\n' . $this->gameTexts[$this->param['example']][0];
                 break;
             case 'name':
                 $text = 'Я навык разработанный MaxImko. И мое предназначение это играть с вами в игру \"Верю не верю\"';
@@ -269,7 +273,7 @@ class newCommand extends \alisa\param\Command
                 $text = $this->help();
                 break;
         }
-        return [$text, '', ''];
+        return [$text];
     }
 
     /**
@@ -301,7 +305,7 @@ class newCommand extends \alisa\param\Command
             $this->image->addImages('imgDir', 'Title', 'Description', $button); // Добавляем картинки
             $this->image->addImages('imgDir', 'Title', 'Description', null);    //===================
             $this->image->footerText = 'Footer'; // Заполняем поле footer если необходимо
-            $this->image->footerButton = $button; // казываем кнопку для footera
+            $this->image->footerButton = $button; // Указываем кнопку для footer`a
 
             /**
              * Так отправлять Список без картинок пользователю

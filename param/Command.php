@@ -17,6 +17,7 @@ require_once __DIR__ . '/../api/Alisa.php';
  * @property bool $isLink
  * @property AlisaImageCard $image
  * @property string $userId = null
+ * @property array $meta
  * @property array $buttons = null
  * @property array|string $param
  * @property bool $updateLink
@@ -26,8 +27,10 @@ require_once __DIR__ . '/../api/Alisa.php';
  **/
 abstract class Command extends Alisa
 {
+    public $origText;
     public $isLink;
     public $payload;
+    public $meta;
 
     public $userId = null;
     public $buttons = null;
@@ -35,7 +38,6 @@ abstract class Command extends Alisa
     public $updateLink; // Указывает что навык запрашивает переопределение ответов
 
     public $botName;
-    public $alisaCommand;
 
     public function __construct($imageToken = '')
     {
@@ -176,6 +178,9 @@ abstract class Command extends Alisa
      * 1 - Тело ответа
      * 2 - Текст для кнопки
      * 3 - Ссылка на ресурс или сайт
+     *
+     * П.с Если нет ссылок, то можно просто вернуть массив вида
+     * ['текст']
      *
      * @param $index
      *

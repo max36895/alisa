@@ -350,7 +350,7 @@ class AlisaImageCard
      */
     public function addImages($imgDir, $title, $description, $button = null)
     {
-        $this->isItemsImage = true;
+        //$this->isItemsImage = true;
         if (!is_array($button) && $button !== null) {
             $button = ['text' => $button, 'payload' => $button];
         }
