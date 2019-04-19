@@ -216,7 +216,7 @@ class YandexBot extends BotSite
         $this->newCommand->origText = $this->output['request']['command'];
         if (!$this->commandText) {
             $this->commandText = $this->commandTextFull;
-            $this->newCommand->origText = $this->output['request']['original_utterance'];
+            $this->newCommand->origText = $this->output['request']['original_utterance'] ?? '';
         }
     }
 

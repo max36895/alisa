@@ -178,7 +178,7 @@ class AlisaImageCard
         $trigger = true;
         $imgId = $host . str_replace('../', '', $this->imgDir);
 
-        if ($alisaImages[$imgId] ?? null) {
+        if (!$alisaImages[$imgId] ?? null) {
             $this->yImages->setImageToken($this->imageToken);
             $this->yImages->skillsId = $this->skillId;
             $image = $this->yImages->downloadImageUrl($host . str_replace('../', '', $this->imgDir));
