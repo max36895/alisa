@@ -5,6 +5,7 @@
 
 namespace alisa\api;
 
+use PHPMailer\PHPMailer\Exception;
 use yandex\api\YandexImages;
 
 require_once __DIR__ . '/yandexApi/YandexImages.php';
@@ -221,6 +222,7 @@ class AlisaImageCard
      * @param $host
      *
      * @return array|null
+     * @throws Exception
      */
     public function sendItemsList($host)
     {
@@ -239,6 +241,8 @@ class AlisaImageCard
                         $image['image_id'] = $res['img_id'];
                         $tmp[] = $image;
                         $index++;
+                    } else {
+                        throw new Exception('AlisaImageCard::sendItemsList() Error: Не удалось получить картинку. Url: ' . $host);
                     }
                 } else {
                     if ($index >= self::MAX_IMAGE_FOR_GALLERY) {
