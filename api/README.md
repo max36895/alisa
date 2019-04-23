@@ -92,6 +92,21 @@ public function addImages($imgDir, $title, $description, $button = null);
     $this->image->footerText = 'Footer'; // Заполняем поле footer если необходимо
     $this->image->footerButton = $button; // Указываем кнопку для footera
 ```
+```php
+$this->image->footerButton
+```
+ - и 
+```php
+$this->image->button
+```
+ - Можно указать как строку.
+В таком случае кнопка получит вид 
+```php
+[
+    'text' => ...,
+    'payload' => ...
+]
+```
 
 
 ## AlisaButton

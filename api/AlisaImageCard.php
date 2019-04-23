@@ -5,7 +5,7 @@
 
 namespace alisa\api;
 
-use PHPMailer\PHPMailer\Exception;
+use Exception;
 use yandex\api\YandexImages;
 
 require_once __DIR__ . '/yandexApi/YandexImages.php';
@@ -55,6 +55,8 @@ class AlisaImageCard
         $this->isBigImage = false;
         $this->isItemsList = false;
         $this->yImages = new YandexImages();
+        $this->footerButton = null;
+        $this->button = null;
     }
 
     /**
@@ -92,9 +94,13 @@ class AlisaImageCard
         if ($button == null) {
             $button = $this->button;
         }
-        if (!is_array($button)) {
+
+        if (!is_array($button) && $button !== null) {
+            $button = ['text' => $button, 'payload' => $button];
+        } elseif (!is_array($button)) {
             return null;
         }
+
         $payload = $button['payload'] ?? null;
         $text = $button['text'] ?? null;
         $url = $button['url'] ?? null;
@@ -323,6 +329,10 @@ class AlisaImageCard
             "header" => ['text' => $this->resize($this->title, 100)]
         ];
 
+        if ($this->footerButton && (!is_array($this->footerButton))) {
+            $this->footerButton = ['text' => $this->footerButton, 'payload' => $this->footerButton];
+        }
+
         $data['items'] = $this->imagesList;
         $data['footer'] = [
             'text' => $this->resize($this->footerText, 60),
@@ -354,10 +364,6 @@ class AlisaImageCard
      */
     public function addImages($imgDir, $title, $description, $button = null)
     {
-        //$this->isItemsImage = true;
-        if (!is_array($button) && $button !== null) {
-            $button = ['text' => $button, 'payload' => $button];
-        }
         $data = [
             'image_dir' => $imgDir,
             'title' => $this->resize($title, 60),
