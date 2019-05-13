@@ -6,7 +6,6 @@ require_once __DIR__ . '/../../param/Command.php';
 
 class newCommand extends \alisa\param\Command
 {
-    public $alisaCommand;
     public $userId = null;
 
     /**
@@ -104,7 +103,6 @@ class newCommand extends \alisa\param\Command
     public function __construct()
     {
         $this->gameTexts = include __DIR__ . '/game.php';
-        $this->alisaCommand = new AlisaCommand();
         parent::__construct();
         $this->updateLink = true; // Указывает что некоторые обработанные ответы изменятся
     }
@@ -130,7 +128,7 @@ class newCommand extends \alisa\param\Command
                 $this->param['example'] = $this->param['example'] ?? '';
             } else {
                 $this->param = [];
-                $this->param['example'] = null;
+                $this->param['example'] = '';
             }
         }
         return true;
