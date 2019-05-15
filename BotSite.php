@@ -3,9 +3,9 @@
  * User: MaxM18
  */
 
-namespace alisa\bot;
+namespace alisa;
 
-use standard\newCommand;
+use alisa\param\newCommand;
 
 /**
  * Class BotSite

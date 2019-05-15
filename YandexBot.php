@@ -3,7 +3,7 @@
  * User: MaxM18
  */
 
-namespace alisa\bot;
+namespace alisa;
 
 ini_set('display_errors', 'off');
 header('Content-Type: application/json');
@@ -117,6 +117,7 @@ class YandexBot extends BotSite
      * @param bool $endSession
      *
      * @return array
+     * @throws \Exception
      */
     private function getResponse($endSession): array
     {
@@ -136,12 +137,10 @@ class YandexBot extends BotSite
             if ($image) {
                 $response['card'] = $image;
             }
+            $this->newCommand->addButtons($this->buttons);
+            $this->newCommand->addLinks($this->buttonMessage, $this->urlMessage);
             $buttons = $this->newCommand->getButtons();
-            if ($buttons === null) {
-                $this->newCommand->addButtons($this->buttons);
-                $this->newCommand->addLinks($this->buttonMessage, $this->urlMessage);
-                $buttons = $this->newCommand->getButtons();
-            }
+
             if ($buttons) {
                 $response['buttons'] = $buttons;
             }
@@ -343,7 +342,7 @@ class YandexBot extends BotSite
     {
         $start = microtime(true);
         try {
-            if (!isset(class_parents($this->newCommand)['alisa\param\Command'])) {
+            if (!isset(class_parents($this->newCommand)['alisa\processing\Command'])) {
                 throw new \Exception('YandexBot::alisa(): Класс команд не унаследован от класса Command!');
             }
             $this->rememberDir = 'yandex';

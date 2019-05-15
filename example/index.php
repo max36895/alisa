@@ -4,7 +4,7 @@
  */
 require_once __DIR__ . '/../YandexBot.php';
 
-$yandexBot = new \alisa\bot\YandexBot();
+$yandexBot = new \alisa\YandexBot();
 if ($yandexBot->output) {
     $yandexBot->name = 'Game_Truth_or_Action';
 
@@ -13,8 +13,8 @@ if ($yandexBot->output) {
 
     $yandexBot->dirAllCommand = __DIR__ . '/param/allCommand.php'; // Добавляем обработчик комманд
 
-    require_once __DIR__ . '/param/newCommand.php'; // Подключаем логику навыка
-    $yandexBot->newCommand = new newCommand(); // Ваш класс с логикой навыка. Важно! Класс должен быть унаследован от класса Command
+    require_once __DIR__ . '/param/exampleCommand.php'; // Подключаем логику навыка
+    $yandexBot->newCommand = new exampleCommand(); // Ваш класс с логикой навыка. Важно! Класс должен быть унаследован от класса Command
 
     $yandexBot->welcome = include __DIR__ . '/param/welcome.php'; // Массив приветственных фраз
     $yandexBot->help = include __DIR__ . '/param/help.php';       // Массив помощи по навыку

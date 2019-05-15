@@ -4,10 +4,11 @@
  * 1 - ответ; 2 -  текст на кнопке; 3 - url
  * */
 
-namespace standard;
-use alisa\param\Command;
+namespace alisa\param;
 
-require_once __DIR__ . '/Command.php';
+use alisa\processing\Command;
+
+require_once __DIR__ . '/../processing/Command.php';
 
 class newCommand extends Command
 {
