@@ -60,6 +60,28 @@ class AlisaImageCard
     }
 
     /**
+     * Возвращаем количество блоков списка
+     * Актуально, когда есть необходимость в проверке количества элементов в списке
+     *
+     * @return int
+     */
+    public function countImageList()
+    {
+        if (is_array($this->imagesList)) {
+            return count($this->imagesList);
+        }
+        return 0;
+    }
+
+    /**
+     * Очищаем список
+     */
+    public function clearImageList()
+    {
+        $this->imagesList = [];
+    }
+
+    /**
      * Установить идентификатор навыка
      * Нужен для того чтобы можно было корректно загружать картинки
      *

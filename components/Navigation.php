@@ -54,7 +54,11 @@ class Navigation
                 $image->footerText = $param['footerText'];
                 $image->footerButton = $param['footerButton'];
             }
-            $buttons = array_merge($page['button'], $buttons);
+            if (is_array($buttons)) {
+                $buttons = array_merge($page['button'], $buttons);
+            } else {
+                $buttons = $page['button'];
+            }
         }
         return $content;
     }
@@ -120,5 +124,34 @@ class Navigation
             $count = count($data);
         }
         return ['start' => $start, 'count' => $count, 'button' => $buttons];
+    }
+
+    /**
+     * Отобразит, какая именно страница отображена
+     *
+     * @param $page
+     * @param $data
+     *
+     * @return string
+     */
+    public static function getPageInfo($page, $data): string
+    {
+        if (!isset($data[$page * 5])) {
+            $page = 0;
+        }
+        $pageInfo = ($page + 1) . ' страница из ';
+
+        $count = count($data);
+        $maxPage = (int)($count / 5);
+        if ($count % 5) {
+            $maxPage++;
+        }
+        $pageInfo .= $maxPage;
+        if ($maxPage == 1) {
+            $pageInfo = '';
+        } else {
+            $pageInfo = '\n' . $pageInfo;
+        }
+        return $pageInfo;
     }
 }
