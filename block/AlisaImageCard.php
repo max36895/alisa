@@ -7,6 +7,7 @@ namespace alisa\block;
 
 use Exception;
 use alisa\api\YandexImages;
+use alisa\components\Text;
 
 require_once __DIR__ . '../api/YandexImages.php';
 
@@ -141,7 +142,7 @@ class AlisaImageCard
             unset($btn['text']);
             return null;
         } else {
-            $btn['text'] = $this->resize($btn['text'], 65);
+            $btn['text'] = Text::resize($btn['text'], 65);
         }
 
         if ($url) {
@@ -153,7 +154,7 @@ class AlisaImageCard
                 }
                 $url .= 'utm_source=Yandex_Alisa&utm_medium=cpc&utm_campaign=phone';
             }
-            $btn['url'] = $this->resize($url, 1024);
+            $btn['url'] = Text::resize($url, 1024);
         } else {
             unset($btn['url']);
             if ($isUrl && $payload == null) {
@@ -303,23 +304,6 @@ class AlisaImageCard
     }
 
     /**
-     * Обрезание текста до нужной длины,
-     * А так же преобразование лишних символов
-     *
-     * @param string $text
-     * @param int $size
-     *
-     * @return string
-     */
-    private function resize($text, $size = 950)
-    {
-        if (mb_strlen($text, 'utf-8') > $size) {
-            $text = (mb_substr($text, 0, $size) . '...');
-        }
-        return str_replace(['\n', '\"'], ["\n", '"'], $text);
-    }
-
-    /**
      * Получить данные для большой картинки
      *
      * @return array
@@ -330,8 +314,8 @@ class AlisaImageCard
         $data = [
             'type' => 'BigImage',
             "image_id" => $this->imageId,
-            "title" => $this->resize($this->title, 100),
-            "description" => $this->resize($this->description, 250),
+            "title" => Text::resize($this->title, 100),
+            "description" => Text::resize($this->description, 250),
         ];
         if ($btn) {
             $data['button'] = $btn;
@@ -348,7 +332,7 @@ class AlisaImageCard
     {
         $data = [
             'type' => 'ItemsList',
-            "header" => ['text' => $this->resize($this->title, 100)]
+            "header" => ['text' => Text::resize($this->title, 100)]
         ];
 
         if ($this->footerButton && (!is_array($this->footerButton))) {
@@ -357,7 +341,7 @@ class AlisaImageCard
 
         $data['items'] = $this->imagesList;
         $data['footer'] = [
-            'text' => $this->resize($this->footerText, 60),
+            'text' => Text::resize($this->footerText, 60),
             'button' => $this->getButton($this->footerButton, false)
         ];
         if ($data['footer']['text']) {
@@ -388,8 +372,8 @@ class AlisaImageCard
     {
         $data = [
             'image_dir' => $imgDir,
-            'title' => $this->resize($title, 60),
-            'description' => $this->resize($description, 250),
+            'title' => Text::resize($title, 60),
+            'description' => Text::resize($description, 250),
             'button' => $this->getButton($button, false)
         ];
         if ($data['button'] == null) {

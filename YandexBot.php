@@ -5,6 +5,8 @@
 
 namespace alisa;
 
+use alisa\components\Text;
+
 ini_set('display_errors', 'off');
 header('Content-Type: application/json');
 
@@ -65,23 +67,6 @@ class YandexBot extends BotSite
     }
 
     /**
-     * Обрезание текста до нужной длины,
-     * а так же преобразование лишних символов
-     *
-     * @param string $text
-     * @param int $size
-     *
-     * @return string
-     */
-    private function resize($text, $size = 950)
-    {
-        if (mb_strlen($text, 'utf-8') > $size) {
-            $text = (mb_substr($text, 0, $size) . '...');
-        }
-        return str_replace(['\n', '\"'], ["\n", '"'], $text);
-    }
-
-    /**
      * Отправка сообщения
      * Возвращается json строка.
      *
@@ -122,8 +107,8 @@ class YandexBot extends BotSite
     private function getResponse($endSession): array
     {
         $response = [];
-        $response['text'] = $this->resize($this->newCommand->getSound($this->textMessage, false));
-        $response['tts'] = $this->resize($this->newCommand->getSound($this->newCommand->generateTTS($this->ttsMessage), true));
+        $response['text'] = Text::resize($this->newCommand->getSound($this->textMessage, false));
+        $response['tts'] = Text::resize($this->newCommand->getSound($this->newCommand->generateTTS($this->ttsMessage), true));
 
         /**
          * Проверка на то какое устройство используется
@@ -183,13 +168,13 @@ class YandexBot extends BotSite
         $this->commandText = mb_strtolower($this->output['request']['command']);
         $this->commandTextFull = mb_strtolower($this->output['request']['original_utterance'] ?? '');
 
-        $this->messageId = $this->output['session']['message_id'];
-        $this->skillId = $this->output['session']['skill_id'];
-        $this->userId = $this->output['session']['user_id'];
+        $this->messageId = $this->output['session']['message_id'] ?? '';
+        $this->skillId = $this->output['session']['skill_id'] ?? '';
+        $this->userId = $this->output['session']['user_id'] ?? '';
         $this->clientKey = $this->userId;
-        $this->sessionId = $this->output['session']['session_id'];
-        $this->nlu = $this->output['request']['nlu'];
-        $this->meta = $this->output['meta'];
+        $this->sessionId = $this->output['session']['session_id'] ?? '';
+        $this->nlu = $this->output['request']['nlu'] ?? '';
+        $this->meta = $this->output['meta'] ?? [];
 
         if (isset($this->meta['interfaces']['screen'])) {
             $this->screen = true;
@@ -249,7 +234,6 @@ class YandexBot extends BotSite
              * Проверяем, разрешено ли навыку дополнять изначальный ответ
              * удобно когда надо на стандартную команду переназначить стандартные кнопки
              * или когда необходимо добавить или изменить какой-то определенный текс стандартной команды.
-             * (Пока что я использую для рекламы и переназначения кнопок)
              **/
 
             if ($this->newCommand->buttons) {

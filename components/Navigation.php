@@ -38,11 +38,13 @@ class Navigation
      *
      * @return string|null
      */
-    public static function showList($page, $data, AlisaImageCard &$image, &$buttons, $param = ['title' => 'Заголовок'])
+    public static function showList($page, $data, AlisaImageCard &$image, &$buttons, $param = [])
     {
         $content = null;
         if ($data) {
-            $content = $config['title'] ?? 'Заголовок';
+            if (isset($config['title'])) {
+                $content = $param['title'];
+            }
             $page = self::getPage($page, $data);
             $image->isItemsList = true;
             $image->title = $content;
@@ -50,10 +52,14 @@ class Navigation
                 $content .= '- ' . $data[$i]['title'];
                 $image->addImages($data[$i]['image'] ?? '', $data[$i]['title'] ?? ' ', $data[$i]['desc'] ?? ' ', $data[$i]['button'] ?? null);
             }
+
             if (isset($param['footerText'])) {
                 $image->footerText = $param['footerText'];
+            }
+            if (isset($param['footerButton'])) {
                 $image->footerButton = $param['footerButton'];
             }
+
             if (is_array($buttons)) {
                 $buttons = array_merge($page['button'], $buttons);
             } else {
@@ -70,7 +76,7 @@ class Navigation
      * @param array $param - Данные пользователя
      * @param array $data - Массив с данными, которые в дальнейшем необходимо отобразить
      */
-    public static function navigate($type, &$param, $data)
+    public static function navigate($type, &$param, $data): void
     {
         if (!isset($param['page'])) {
             $param['page'] = 0;
@@ -105,7 +111,7 @@ class Navigation
      *
      * @return array ['start' => int, 'count' => int, 'button' => array]
      */
-    public static function getPage($page, $data = null)
+    public static function getPage($page, $data = null): array
     {
         $count = self::MAX_ELEMENT;
         $start = $page * $count;
@@ -127,7 +133,7 @@ class Navigation
     }
 
     /**
-     * Отобразит, какая именно страница отображена
+     * Отобразит, на какой странице находится пользователь
      *
      * @param $page
      * @param $data
