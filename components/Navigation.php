@@ -44,10 +44,13 @@ class Navigation
         if ($data) {
             if (isset($config['title'])) {
                 $content = $param['title'];
+                $image->title = $content;
             }
             $page = self::getPage($page, $data);
             $image->isItemsList = true;
-            $image->title = $content;
+            if ($image->title) {
+                $image->title .= self::getPageInfo($page, $data);
+            }
             for ($i = $page['start']; $i < $page['count']; $i++) {
                 $content .= '- ' . $data[$i]['title'];
                 $image->addImages($data[$i]['image'] ?? '', $data[$i]['title'] ?? ' ', $data[$i]['desc'] ?? ' ', $data[$i]['button'] ?? null);
@@ -55,9 +58,9 @@ class Navigation
 
             if (isset($param['footerText'])) {
                 $image->footerText = $param['footerText'];
-            }
-            if (isset($param['footerButton'])) {
-                $image->footerButton = $param['footerButton'];
+                if (isset($param['footerButton'])) {
+                    $image->footerButton = $param['footerButton'];
+                }
             }
 
             if (is_array($buttons)) {
