@@ -3,7 +3,7 @@
  * User: MaxM18
  */
 
-namespace alisa\api;
+namespace bot\api;
 
 use Exception;
 

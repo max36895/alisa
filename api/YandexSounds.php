@@ -1,29 +1,23 @@
 <?php
 /**
- * User: MaxM18
+ * Created by PhpStorm.
+ * User: max18
+ * Date: 28.06.2019
+ * Time: 15:10
  */
 
 namespace bot\api;
 
-use Exception;
+use \Exception;
 
-require_once __DIR__ . '/YandexService.php';
-
-/**
- * Класс для работы с api картинками для навыка.
- * Class YandexImages
- * @package yandex\api
- * @property string $skillId - Идентификатор вашего навыка.
- * @property string $IMAGE_TOKEN - Полученный токен.
- */
-class YandexImages extends YandexService
+class YandexSounds extends YandexService
 {
     /**
      * Для получения токена перейти по ссылке
      * https://tech.yandex.ru/dialogs/alice/doc/resource-upload-docpage/ - Документация
      * https://oauth.yandex.ru/verification_code - Получение токена
      */
-    const IMAGE_TOKEN = '<Токен, который мы получили при регистрации>';
+    const SOUND_TOKEN = '<Токен, который мы получили при регистрации>';
 
     /**
      * Идентификатор навыка. Можно получить в запросе навыка(Блок session поле skill_id). Или из url навыка в панели для разработчиков.
@@ -34,7 +28,7 @@ class YandexImages extends YandexService
     public final function __construct($oauth = null)
     {
         if (!$oauth) {
-            $oauth = self::IMAGE_TOKEN;
+            $oauth = self::SOUND_TOKEN;
         }
         $this->skillsId = null;
         parent::__construct($oauth);
@@ -55,7 +49,7 @@ class YandexImages extends YandexService
      *
      * @param $token
      */
-    public function setImageToken($token)
+    public function setSoundToken($token)
     {
         $this->setOauth($token);
     }
@@ -65,7 +59,7 @@ class YandexImages extends YandexService
      *
      * @return string
      */
-    public function getImageToken()
+    public function getSoundToken()
     {
         return $this->getOauth();
     }
@@ -83,42 +77,11 @@ class YandexImages extends YandexService
     {
         try {
             $query = $this->call($this->getUrl() . 'status');
-            if (isset($query['images']['quota'])) {
-                return $query['images']['quota'];
+            if (isset($query['sounds']['quota'])) {
+                return $query['sounds']['quota'];
             }
             $this->setError($query);
-            throw new Exception('YandexImages::isStatus() Error: Не удалось проверить занятое место');
-        } catch (Exception $e) {
-            $this->logging($e, true);
-            return null;
-        }
-    }
-
-    /**
-     * Загрузка изображения из интернета
-     *
-     * Вернет массив
-     * - id - Идентификатор изображения
-     * - origUrl - Адрес изображения.
-     *
-     * @param $url - Адресс картики из интернета
-     *
-     * @return null|array['id' => string, 'origUrl' => string]
-     */
-    public function downloadImageUrl($url)
-    {
-        try {
-            if ($this->skillsId) {
-                $query = $this->call($this->getUrl() . 'skills/' . $this->skillsId . '/images', array('header' => array(self::HEADER_AP_JSON), 'post' => json_encode(array('url' => $url))));
-                if (isset($query['image']['id'])) {
-                    return $query['image'];
-                } else {
-                    $this->setError($query);
-                    throw new Exception('YandexImages::downloadImageUrl() Error: Не удалось загрузить изображение с сайта: ' . $url);
-                }
-            }
-            $this->setError('Не выбран навык');
-            throw new Exception('YandexImages::downloadImageUrl() Error: Не выбран навык');
+            throw new Exception('YandexSounds::checkOutPlace() Error: Не удалось проверить занятое место');
         } catch (Exception $e) {
             $this->logging($e, true);
             return null;
@@ -132,24 +95,24 @@ class YandexImages extends YandexService
      * - id - Идентификатор изображения
      * - origUrl - Адрес изображения.
      *
-     * @param $img - Расположение картинки на сервере
+     * @param $sound - Расположение картинки на сервере
      *
      * @return null|array['id' => string, 'origUrl' => string]
      */
-    public function downloadImageFile($img)
+    public function downloadSound($sound)
     {
         try {
             if ($this->skillsId) {
-                $query = $this->call($this->getUrl() . 'skills/' . $this->skillsId . '/images', array('header' => array(self::HEADER_FORM_DATA), 'file' => $img));
-                if (isset($query['image']['id'])) {
-                    return $query['image'];
+                $query = $this->call($this->getUrl() . 'skills/' . $this->skillsId . '/sounds', array('header' => array(self::HEADER_FORM_DATA), 'file' => $sound));
+                if (isset($query['sound']['id'])) {
+                    return $query['sound'];
                 } else {
                     $this->setError($query);
-                    throw new Exception('YandexImages::downloadImageFile() Error: Не удалось загрузить изображение: ' . $img);
+                    throw new Exception('YandexSounds::downloadSound() Error: Не удалось загрузить мелодию: ' . $sound);
                 }
             }
             $this->setError('Не выбран навык');
-            throw new Exception('YandexImages::downloadImageFile() Error: Не выбран навык');
+            throw new Exception('YandexSounds::downloadSound() Error: Не выбран навык');
         } catch (Exception $e) {
             $this->logging($e, true);
             return null;
@@ -165,20 +128,20 @@ class YandexImages extends YandexService
      *
      * @return null|array[['id' => string, 'origUrl' => string],...]
      */
-    public function getLoadedImages()
+    public function getLoadedSounds()
     {
         try {
             if ($this->skillsId) {
-                $query = $this->call($this->getUrl() . 'skills/' . $this->skillsId . '/images');
+                $query = $this->call($this->getUrl() . 'skills/' . $this->skillsId . '/sounds');
                 if (isset($query['images'])) {
                     return $query['images'];
                 } else {
                     $this->setError($query);
-                    throw new Exception('YandexImages::getLoadedImages() Error: Не удалось получить список загруженных сообщений');
+                    throw new Exception('YandexSounds::getLoadedSounds() Error: Не удалось получить список загруженных мелодий');
                 }
             }
             $this->setError('Не выбран навык');
-            throw new Exception('YandexImages::getLoadedImages() Error: Не выбран навык');
+            throw new Exception('YandexSounds::getLoadedSounds() Error: Не выбран навык');
         } catch (Exception $e) {
             $this->logging($e, true);
             return null;
@@ -193,19 +156,19 @@ class YandexImages extends YandexService
      *
      * @return null|array
      */
-    public function deleteImage($imgId)
+    public function deleteSound($imgId)
     {
         try {
             if ($this->skillsId) {
-                $query = $this->call($this->getUrl() . 'skills/' . $this->skillsId . '/images/' . $imgId, array(), 'DELETE');
+                $query = $this->call($this->getUrl() . 'skills/' . $this->skillsId . '/sounds/' . $imgId, array(), 'DELETE');
                 if (isset($query['result'])) {
                     return $query;
                 }
                 $this->setError($query);
-                throw new Exception('YandexImages::deleteImage() Error: Не удалось удалить картинку');
+                throw new Exception('YandexSounds::deleteSound() Error: Не удалось удалить картинку');
             }
             $this->setError('Не выбран навык');
-            throw new Exception('YandexImages::deleteImage() Error: Не выбран навык');
+            throw new Exception('YandexSounds::deleteSound() Error: Не выбран навык');
         } catch (Exception $e) {
             $this->logging($e, true);
             return null;
@@ -223,15 +186,15 @@ class YandexImages extends YandexService
      *
      * @return array['success' => int, 'fail' => int]
      */
-    public function deleteAllImage()
+    public function deleteAllSounds()
     {
         $success = 0;
         $fail = 0;
-        $images = $this->getLoadedImages();
-        foreach ($images as $image) {
-            $imageId = $image['id'] ?? null;
-            if ($imageId) {
-                if ($this->deleteImage($imageId)) {
+        $sounds = $this->getLoadedSounds();
+        foreach ($sounds as $sound) {
+            $soundId = $sound['id'] ?? null;
+            if ($soundId) {
+                if ($this->deleteSound($soundId)) {
                     $success++;
                 } else {
                     $fail++;
@@ -247,10 +210,10 @@ class YandexImages extends YandexService
     /**
      * Грубое удаление всех картинок
      */
-    public function deleteAllImageIgnore()
+    public function deleteAllSoundsIgnore()
     {
         do {
-            $fail = $this->deleteAllImage()['fail'];
+            $fail = $this->deleteAllSounds()['fail'];
         } while ($fail);
     }
 }

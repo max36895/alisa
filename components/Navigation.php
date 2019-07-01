@@ -6,9 +6,9 @@
  * Time: 8:44
  */
 
-namespace alisa\components;
+namespace bot\components;
 
-use alisa\block\AlisaImageCard;
+use bot\alisa\AlisaImageCard;
 
 class Navigation
 {
@@ -19,7 +19,7 @@ class Navigation
     /**
      * Отображение списка.
      * Рекомендация!
-     * Лучше заполнять свойства image->title и image->footer вручную.
+     * Лучше заполнять свойства image->title и image->footer отдельно.
      *
      * @param int $page
      * @param array $data [
@@ -42,20 +42,26 @@ class Navigation
     {
         $content = null;
         if ($data) {
-            if (isset($config['title'])) {
-                $content = $param['title'];
-                $image->title = $content;
+            if (isset($param['title'])) {
+                $image->title = $param['title'];
             }
-            $page = self::getPage($page, $data);
-            $image->isItemsList = true;
             if ($image->title) {
                 $image->title .= self::getPageInfo($page, $data);
             }
+            $page = self::getPage($page, $data);
             for ($i = $page['start']; $i < $page['count']; $i++) {
-                $content .= '- ' . $data[$i]['title'];
-                $image->addImages($data[$i]['image'] ?? '', $data[$i]['title'] ?? ' ', $data[$i]['desc'] ?? ' ', $data[$i]['button'] ?? null);
+                if (isset($data[$i]['name'])) {
+                    if (!isset($data[$i]['title'])) {
+                        $data[$i]['title'] = $data[$i]['name'];
+                    }
+                }
+                if (mb_strlen($data[$i]['title'] . ' ' . $data[$i]['description']) < 30) {
+                    $content .= '- ' . $data[$i]['title'] . ' ' . $data[$i]['description'];
+                } else {
+                    $content .= '- ' . $data[$i]['title'];
+                }
+                $image->addImages($data[$i]['image'] ?? '', $data[$i]['title'] ?? ' ', $data[$i]['description'] ?? ' ', $data[$i]['button'] ?? null);
             }
-
             if (isset($param['footerText'])) {
                 $image->footerText = $param['footerText'];
                 if (isset($param['footerButton'])) {
@@ -73,13 +79,14 @@ class Navigation
     }
 
     /**
-     * Навигация. Пролистывания вперед или назад в зависимости от параметра type.
+     * Навигация.
+     * Пролистывания вперед или назад в зависимости от параметра type.
      *
      * @param int $type - Тип навигации (вперед или назад)
      * @param array $param - Данные пользователя
-     * @param array $data - Массив с данными, которые в дальнейшем необходимо отобразить
+     * @param array $data - Массив с данными, которые в дальнейшем необходимо отобразить, необходим для того, чтобы получить количество элементов
      */
-    public static function navigate($type, &$param, $data): void
+    public static function navigate($type, &$param, $data)
     {
         if (!isset($param['page'])) {
             $param['page'] = 0;
@@ -106,15 +113,15 @@ class Navigation
     }
 
     /**
-     * Обработка для отображения контента
-     * Вернет стартовую и конечную позицию, а также кнопки навигации
+     * Обработка для отображения нужного контента
+     * Вернет стартовую и конечную позицию в списке, а также кнопки навигации
      *
      * @param int $page - Текущая страница
      * @param array $data - Массив с данными, которые в дальнейшем необходимо отобразить
      *
      * @return array ['start' => int, 'count' => int, 'button' => array]
      */
-    public static function getPage($page, $data = null): array
+    public static function getPage($page, $data = null)
     {
         $count = self::MAX_ELEMENT;
         $start = $page * $count;
@@ -138,8 +145,8 @@ class Navigation
     /**
      * Отобразит, на какой странице находится пользователь
      *
-     * @param $page
-     * @param $data
+     * @param $page - Текущая страница
+     * @param $data - Массив с данными
      *
      * @return string
      */

@@ -5,7 +5,7 @@
 require_once __DIR__ . '/../../processing/Command.php';
 require_once __DIR__ . '/../../components/Text.php';
 
-class exampleCommand extends \alisa\processing\Command
+class exampleCommand extends \bot\processing\Command
 {
     public $userId = null;
 
@@ -183,7 +183,7 @@ class exampleCommand extends \alisa\processing\Command
      */
     private function info()
     {
-        $info = include __DIR__ . '/../../param/information.php';
+        $info = ['1 факт', '2 факт', '3 факт'];
         return $this->getRandText($info);
     }
 
@@ -351,7 +351,7 @@ class exampleCommand extends \alisa\processing\Command
              *
              * Проверка согласен пользователь или нет.
              */
-            if (\alisa\components\Text::isSayTrue($text)) {
+            if (\bot\components\Text::isSayTrue($text)) {
                 return ['Ура! Вы изменили имя'];
             } else {
                 return ['Увы имя не изменилось!'];

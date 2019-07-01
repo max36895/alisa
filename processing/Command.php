@@ -3,27 +3,25 @@
  * User: MaxM18
  */
 
-namespace alisa\processing;
+namespace bot\processing;
 
-use alisa\block\Alisa;
-use alisa\block\AlisaImageCard;
-use alisa\block\AlisaNlu;
-
-require_once __DIR__ . '/../block/Alisa.php';
+use bot\alisa\Alisa;
+use bot\components\Text;
 
 /**
  * Class Command
  * @property string $origText - Оригинальный текст пользователя
- * @property bool $isLink
- * @property AlisaImageCard $image
- * @property string $userId = null
- * @property array $meta
- * @property array $buttons = null
- * @property array|string $param
- * @property bool $updateLink
- * @property string $botName
- * @property AlisaNlu $nlu
- * @property string|array $payload
+ *
+ * @property string $userId = null - Идентификатор пользователя
+ * @property array $meta - Мета информация (часовой пояс и другие показатели)
+ * @property array $buttons = null - Кнопки в виде кнопок для отображения
+ * @property array|string $param - Пользовательские данные
+ * @property bool $updateLink - Переопределять стандартные команды или нет
+ * @property string $botName - Имя ассиатента
+ *
+ * @property string|array $payload - Произвольный json передается, если пользователь нажал на кнопку, в которой находился payload
+ * @property string $sessionDir - Путь для сохранения пользовательских данных. Не рекомендуется изменять в интерфейсе этого класса.
+ *                                Для изменения деректории стоит вызвать метод setSessionDir класса Bot
  **/
 abstract class Command extends Alisa
 {
@@ -39,14 +37,16 @@ abstract class Command extends Alisa
 
     public $botName;
 
+    public $sessionDir = '';
+
     public function __construct($imageToken = '')
     {
         parent::__construct($imageToken);
-        $this->isLink = false;
-        $this->param = 'Нет параметров';
+        $this->param = null;
         $this->updateLink = false;
         $this->botName = '';
         $this->payload = null;
+        $this->sessionDir = '';
     }
 
     /**
@@ -68,10 +68,7 @@ abstract class Command extends Alisa
      */
     public final function getRandText($text)
     {
-        if (is_array($text)) {
-            $text = $text[rand(0, count($text) - 1)];
-        }
-        return $text;
+        return Text::getRandText($text);
     }
 
     /**
@@ -87,10 +84,10 @@ abstract class Command extends Alisa
             return true;
         }
         if ($this->userId !== null) {
-            if (!is_dir('session')) {
-                mkdir('session');
+            if (!is_dir($this->sessionDir . 'session')) {
+                mkdir($this->sessionDir . 'session');
             }
-            $fileName = 'session/' . $this->userId . '.json';
+            $fileName = ($this->sessionDir . 'session/' . $this->userId . '.json');
             if (is_file($fileName)) {
                 $file = fopen($fileName, 'r');
                 $this->param = json_decode(fread($file, filesize($fileName)), true);
@@ -133,12 +130,34 @@ abstract class Command extends Alisa
     }
 
     /**
-     * @return string
+     * Получаем параметры, если вдруг они не проинициализированы
      */
-    public function getParam()
+    public final function getParams(): void
     {
-        return '';
+        if (!$this->param) {
+            $this->isParams();
+        }
     }
+
+    /**
+     * Инициализация команд пользователя.
+     * Проще говоря здесь происходит инициализация $param
+     *
+     * Рекомендуемое содержимое.
+     *
+     * if (!$this->param) { // Проверяем не инициализирован ли $param
+     * if ($this->prevCommand()) { // получаем пользовательские данные
+     * $this->param['prev'] = $this->param['prev'] ?? ''; // Заполняем данные, в случае если блок не найден, то он создается со стандартными значениями
+     * } else {
+     * $this->param = []; // инициализируем $param
+     * $this->param['prev'] = '';
+     * }
+     * }
+     * return true;
+     *
+     * @return bool
+     */
+    public abstract function isParams();
 
     /**
      * Обновление или замена изначальных значений
@@ -170,7 +189,7 @@ abstract class Command extends Alisa
      */
     public function getHost(): string
     {
-        return '';
+        return 'https://www.islandgift.ru/';
     }
 
     /**

@@ -6,7 +6,7 @@
  * Time: 9:13
  */
 
-namespace alisa\components;
+namespace bot\components;
 
 
 class Text
@@ -14,15 +14,16 @@ class Text
     /**
      * Обработка всех символов, из-за которых регулярка может дать сбой
      *
-     * @param $pattern
+     * @param string $pattern - Пользовательский текст, который попадает в регулярное выражение
      *
-     * @return mixed
+     * @return string
      */
-    public static function refactPatternText($pattern)
+    public static function refactPatternText($pattern): string
     {
         return str_replace(
             ["\\", '/', '[', ']', '.', '(', ')', '*', '|', '?'],
-            ["\\\\", '\/', '\[', '\]', '\.', '\(', '\)', '\*', '\|', '\?'], $pattern);
+            ["\\\\", '\/', '\[', '\]', '\.', '\(', '\)', '\*', '\|', '\?'],
+            $pattern);
     }
 
     /**
@@ -58,22 +59,23 @@ class Text
     }
 
     /**
-     * Проверяет есть ли значения по регулярке или нет
+     * Проверяет есть ли значения при поиске по регулярке или нет.
      *
-     * @param $pattern
-     * @param $text
+     * @param string $pattern - Произвольное регулярное выражение
+     * @param string $text - Текст, который нужно обработать
      *
      * @return bool
      */
-    public static function isSayPattern($pattern, $text)
+    public static function isSayPattern($pattern, $text): bool
     {
         preg_match_all('/' . $pattern . '/umi', $text, $data);
         return (($data[0][0] ?? null) ? true : false);
     }
 
     /**
-     * Поиск определенного слова в тексте
+     * Поиск определенного слова или выражения в тексте
      * Поиск осуществляется как полного текста, так и не полного
+     * Т.е. если есть text = "приветик", а мы ищем find="Привет", тогда вернется true
      *
      * @param $find - Слово для поиска можно передать массив из слов
      * @param $text - Текст в котором осуществляется поиск
@@ -81,7 +83,7 @@ class Text
      *
      * @return bool
      */
-    public static function isSayText($find, $text, $isAll = false)
+    public static function isSayText($find, $text, $isAll = false): bool
     {
         $pattern = '';
         if (is_array($find)) {
@@ -107,13 +109,13 @@ class Text
     }
 
     /**
-     * Проверяет согласен ли пользователь на что-либо
+     * Проверяет согласен ли пользователь
      *
-     * @param $text
+     * @param string $text
      *
      * @return bool
      */
-    public static function isSayTrue($text)
+    public static function isSayTrue($text): bool
     {
         $pattern = '/(\bда\b)|(\bконечно\b)|(\bсогласен\b)|(подтвер)/umi';
         preg_match_all($pattern, $text, $data);
@@ -121,13 +123,13 @@ class Text
     }
 
     /**
-     * Проверяет не соглаен ли пользователь на что-либо
+     * Проверяет не соглаен ли пользователь
      *
-     * @param $text
+     * @param string $text
      *
      * @return bool
      */
-    public static function isSayFalse($text)
+    public static function isSayFalse($text): bool
     {
         $pattern = '/(\bнет\b)|(\bнеа\b)|(\bне\b)/umi';
         preg_match_all($pattern, $text, $data);
@@ -137,11 +139,11 @@ class Text
     /**
      * Проверяет хочет пользователь отменить действие или нет
      *
-     * @param $text
+     * @param string $text
      *
      * @return bool
      */
-    public static function isSayCancel($text)
+    public static function isSayCancel($text): bool
     {
         $pattern = '/(\bотмена\b)|(\bотменить\b)/umi';
         preg_match_all($pattern, $text, $data);
@@ -157,7 +159,7 @@ class Text
      *
      * @return string
      */
-    public static function resize($text, $size = 950)
+    public static function resize($text, $size = 950): string
     {
         if (mb_strlen($text, 'utf-8') > $size) {
             $text = (mb_substr($text, 0, $size) . '...');
@@ -169,14 +171,76 @@ class Text
      * Возвращает определенный символ или несколько символов в тексте
      * Актуально когда нужно получить какой либо символ unicode строки
      *
-     * @param $text - текс
-     * @param $index - Порядковый номер символа
+     * @param string $text - текс
+     * @param int $index - Порядковый номер символа
      * @param int $count - Количество символов для поиска
      *
      * @return string
      */
-    public static function getCharUtf($text, $index, $count = 1)
+    public static function getCharUtf($text, $index, $count = 1): string
     {
         return mb_substr($text, $index, $count);
+    }
+
+    /**
+     * Проверка текста на сходство.
+     * В результате вернет статус схожести, а также текст и ключ в массиве
+     *
+     * Если текста схожи, тогда status = true, и заполняются поля:
+     * index - Если был передан массив, тогда вернется его индекс.
+     * text - Текст, который оказался максимально схожим.
+     *
+     * @param string $origText - оригинальный текст. С данным текстом будет производиться сравнение
+     * @param string|array $text - Текст для сравнени. можно передать массив из текстов для поиска.
+     * @param int $percent - при какой процентной схожести считать что текста одинаковые
+     *
+     * @return array ['status' => bool, 'index' => int|string, 'text' => string]
+     */
+    public static function textSimilarity($origText, $text, $percent = 80): array
+    {
+        $data = [
+            'percent' => 0,
+            'index' => null
+        ];
+        if (!is_array($text)) {
+            $text = [$text];
+        }
+        $origText = mb_strtolower($origText);
+        foreach ($text as $index => $res) {
+            $res = mb_strtolower($res);
+            if ($res == $origText) {
+                return ['status' => true, 'index' => $index, 'text' => $res];
+            }
+            $per = 0;
+            similar_text($origText, $res, $per);
+            if ($data['percent'] < $per) {
+                $data = [
+                    'percent' => $per,
+                    'index' => $index
+                ];
+            }
+        }
+        if ($data['percent'] >= $percent) {
+            return ['status' => true, 'index' => $data['index'], 'text' => $text[$data['index']]];
+        }
+        return ['status' => false, 'index' => null, 'text' => null];
+    }
+
+    /**
+     * Получить рандомное значение из массива
+     * В случае если передается строка, тогда возвращается строка.
+     * Если массив имеет произвольный ключ. Тоесть, массив имеет вид ['text1'=>'...','text2'=>'...'] вместо ['...','...'],
+     * тогда будет использован 1 элемент массива.
+     *
+     * @param string|array $text
+     *
+     * @return string
+     */
+    public static function getRandText($text): string
+    {
+        if (is_array($text)) {
+            $text = ($text[rand(0, count($text) - 1)] ?? current($text));
+        }
+        return $text;
     }
 }
